@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
-import './App.css'
+import { useEffect, useState } from "react";
+import "./App.css";
 
-function App() {
-  const [words, setWords] = useState([
+const letters = "abcdefghijklmnopqrstuvwxyz";
+
+const words = [
     "install",
     "rhythm",
     "slope",
@@ -12,68 +13,76 @@ function App() {
     "full",
     "irritating",
     "amusing"
-  ])
-  function getarandomWord () {
-    let randomletter = Math.floor(Math.random() * words.length)
-    return words[randomletter]
-  }
+];
 
-  let state = {
-    word: getarandomWord(),
-    characters: [],
-    maxmistakes: 5,
-    streak: 0
-  }
-  function restart () {
-    state.word = getarandomWord()
-    state.characters = []
-  }
-  function getthewrongasnwers () {
-    return state.characters.filter(char => !state.word.includes(char))
-  }
-  function getthewrongasnwersCount () {
-    let mistakes = getthewrongasnwers()
-    return mistakes.length
-  }
-
-function getthecorrectanswers () {
-  return state.characters.filter(char => state.word.includes(char))
-}
-
-function ifWon () {
-  for (let char of state.word) {
-    if (!state.characters.includes(char)) return false
-  }
-  return true
-}
-function ifLost () {
-  return getthewrongasnwersCount() >= state.maxmistakes
+function getarandomWord() {
+  const randomletter = Math.floor(Math.random() * words.length);
+  return words[randomletter];
 }
 
 
-return(
- <div className='App'>
-  <div className='header'>
-  <h1>The World of Games</h1>
-  <h2>Hangman</h2>
-  </div>
-  <div className='main'>
-  <h3>{getarandomWord().toUpperCase()}</h3>
-  <div className='input'>
-  <input ></input>
-  <button onClick={()=>{{ifWon}
-    return (
-      <div>
-        Congrats
+function App() {
+  const [words, setWords] = useState(getarandomWord());
+  const [answers, setAnswers] = useState(['']);
+
+  let wrongAnswers = answers.filter((answer) => !words.includes(answer));
+  let correctAnswers = answers.filter((answer) => words.includes(answer));
+
+  const lives = 6 - wrongAnswers.length;
+
+  let lost = lives === 0
+  let won = words.split('').every(char => correctAnswers.includes(char))
+
+  function restart() {
+    setAnswers([]);
+    setWords(getarandomWord());
+  }
+
+  useEffect(() => {
+    if (lost || won) return;
+
+    function listener (event) {
+      let answer = event.key.toLowerCase();
+
+      if (!letters.includes(answer)) return;
+      if (answers.includes(answer)) return;
+
+      setAnswers([...answers, answer]);
+    };
+
+    window.addEventListener("keydown", listener);
+
+    return () => removeEventListener("keydown", listener);
+  }, [answers, lost, won]);
+
+  return (
+    <div className="App">
+      <div className='header'>
+        <h1>The World of Games</h1>
+        </div>
+        <div className="main">
+          <h2>Guess the word!</h2>
+      <div className="word">
+        {words.split("").map((char, leter) => (
+          <span key={leter}>{correctAnswers.includes(char) ? char : "_"} </span>
+        ))}
       </div>
-    )
-  }} > GO </button>
-
-  </div>
-  </div>
- </div>
-)
-  
+      {lost ? (
+        <div className="the-div">
+          <p>You lost! </p>
+          <p>The correct word was: {words}</p>
+          <button className="play-again-btn" onClick={restart}>Play Again</button>
+        </div>
+      ) : null}
+      {won ? (
+        <div className="the-div">
+          <p>You win</p>
+          <button className="play-again-btn" onClick={restart}>Play Again</button>
+        </div>
+      ) : null}
+      </div>
+    </div>
+  );
 }
 
-export default App
+export default App;

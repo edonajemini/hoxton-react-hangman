@@ -17,8 +17,22 @@
 .main input{
   border: none;
   border-bottom:thin solid gray;
-  margin-bottom: 5px;
+  margin-top: 50px;
+  font-size: 16px;
+  padding: 0 10px;
 }
 .main input:focus{
   outline: none;
+}
+.play-again-btn{
+  width: 100px;
+  height: 25px;
+  margin: 10px;
+}
+.word{
+  margin: 60px;
+}
+
+.main h2{
+  font-weight: 300;
 }
