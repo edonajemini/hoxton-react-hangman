@@ -76,7 +76,7 @@ function App() {
       ) : null}
       {won ? (
         <div className="the-div">
-          <p>You win</p>
+          <p>You won! Congratss!! :) </p>
           <button className="play-again-btn" onClick={restart}>Play Again</button>
         </div>
       ) : null}
